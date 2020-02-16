@@ -3,7 +3,7 @@
 ## Considerations
 Plugin to repagination.
 
-Use the forcepaginate-ajaxcode.
+Use the force, read the code.
 
 ## Requirements
 

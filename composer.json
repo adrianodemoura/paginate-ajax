@@ -1,0 +1,40 @@
+{
+    "name": "adrianodemoura/PaginateAjax",
+    "description": "PaginateAjax plugin for CakePHP",
+    "type": "cakephp-plugin",
+    "license": "MIT",
+    "keywords": ["cakephp", "paginate", "ajax"],
+    "homepage": "https://github.com/adrianodemoura/paginate-ajax",
+    "minimum-stability": "stable",
+
+    "authors": [
+        {
+            "name": "Adriano Moura",
+            "homepage": "https://github.com/adrianodemoura"
+        }
+    ],
+
+    "support": {
+        "issues": "https://github.com/adrianodemoura/paginate-ajax/issues",
+        "forum": "http://stackoverflow.com/tags/paginate-ajax",
+        "source": "https://github.com/adrianodemoura/paginate-ajax"
+    },
+
+    "require": {
+        "cakephp/cakephp": "^3.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7.14|^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "PaginateAjax\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PaginateAjax\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    }
+}
