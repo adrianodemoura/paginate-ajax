@@ -4,9 +4,9 @@
 
 	echo '<div style="display: none;">';
 
-	echo $this->Form->control('pagina');
+	echo $this->Form->control('pagina', ['value'=> @$pagina]);
 
-	echo $this->Form->control('ultima');
+	echo $this->Form->control('ultima', ['value'=> (@$pagina+1)]);
 
 	if ( !empty( @$acoes ) )
 	{

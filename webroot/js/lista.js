@@ -1,18 +1,20 @@
 window.onload = function()
 {
 	// capturando o evento click, para todos os elementos que possui a classe buttonPaginateAjax
-	Array.from( document.querySelectorAll(".buttonPaginateAjax" ), e =>
-	e.addEventListener('click', event =>
+	Array.from( document.querySelectorAll(".buttonPaginateAjax" ), buttonPaginateAjax =>
+	buttonPaginateAjax.addEventListener('click', event =>
 	{
 		event.preventDefault()
-		getPaginate(e)
+		setPaginatePage( buttonPaginateAjax )
 	}))
 
 	// forçando o click da primeira página, em todos os formulários
 	let totalForms = document.querySelectorAll('[name="pAjaxP"]').length
 	for (i=1; i<=totalForms; i++)
 	{
-		document.querySelectorAll('[name="pAjaxP"]')[(i-1)].click()
+		//document.querySelectorAll('[name="pAjaxP"]')[(i-1)].click()
+		let form = document.forms[ (i-1) ];
+		getPaginate(form)
 	}
 }
 
@@ -21,61 +23,77 @@ window.onload = function()
  *
  * @param 	e 	Elemento button (<<, <, >, >>)
  */
-async function getPaginate(e)
+async function getPaginate(form)
 {
-	let elemento 	= e.form
-	let ajaxUrl 	= e.form.action
-	let currentPage = elemento.querySelector('[name="pagina"]').getAttribute('value')
-	let lastPage 	= parseInt( elemento.querySelector('[name="ultima"]').getAttribute('value') )
-	let acoes 		= {}
-	let token 		= {}
-
-	// configurando o token caso exista
-	if ( !!elemento.querySelector('[name="_Token[fields]"]') )
-	{
-		token['fields'] = elemento.querySelector('[name="_Token[fields]"]').getAttribute('value')
-	}
-	if ( !!elemento.querySelector('[name="_Token[unlocked]"]') )
-	{
-		token['unlocked'] = elemento.querySelector('[name="_Token[unlocked]"]').getAttribute('value')
-	}
-	if ( !!elemento.querySelector('[name="_Token[debug]"]') )
-	{
-		token['debug'] = elemento.querySelector('[name="_Token[debug]"]').getAttribute('value')
-	}
-
-	// configurando a página clicada pelo usuário
-	if ( e.name == 'pAjaxP') currentPage = 1
-	if ( e.name == 'pAjaxA') currentPage--
-	if ( e.name == 'pAjaxR') currentPage++
-	if ( e.name == 'pAjaxU') currentPage = lastPage
-	if ( currentPage > lastPage && lastPage>0 ) currentPage = lastPage
-	if ( currentPage < 1) currentPage = 1
-
-	let spanPagina 	= elemento.querySelector('[id="spanPagina"]')
-	let spanTotal 	= elemento.querySelector('[id="spanTotal"]')
-	let spanFaixa  	= elemento.querySelector('[id="spanFaixa"]')
-	let spanUltima  = elemento.querySelector('[id="spanUltima"]')
-
-	elemento.querySelector('[name="pagina"]').setAttribute('value', currentPage)
-
-	let ajaxForm 	= JSON.stringify({'pagina': currentPage, 'ultima': lastPage, '_Token': token })
-	let ajaxOptions = { body: ajaxForm, method: 'post', headers: {'Content-Type': 'application/json' } }
+	// parâmetros da pesquisa
+	let currentPage = form.querySelector('[name="pagina"]').getAttribute('value')
+	let lastPage 	= parseInt( form.querySelector('[name="ultima"]').getAttribute('value') )
+	let token 		= getPaginateToken(form)
 
 	// executando o ajax e populando seu retorno na table ou seu erro.
-	await fetch(ajaxUrl, ajaxOptions)
+	let ajaxForm 	= JSON.stringify({'pagina': currentPage, 'ultima': lastPage, '_Token': token })
+	let ajaxOptions = { body: ajaxForm, method: 'post', headers: {'Content-Type': 'application/json' } }
+	await fetch( form.action, ajaxOptions )
 	.then( res => res.json() )
 	.then( res => 
 	{
 		if ( res.status )
 		{
-			setPaginateTable(elemento, res)
+			setPaginateTable(form, res)
 		} else
 		{
-			elemento.querySelector('[name="thead"]').innerHTML = "<tr><th>erro</th></tr>"
-			elemento.querySelector('[name="tbody"]').innerHTML = "<tr><td class='PaginateAjaxError'>"+res.mensagem+"</td></tr>"
+			form.querySelector('[name="thead"]').innerHTML = "<tr><th>erro</th></tr>"
+			form.querySelector('[name="tbody"]').innerHTML = "<tr><td class='PaginateAjaxError'>"+res.mensagem+"</td></tr>"
 		}
 	}).catch( error => console.error(`Error: ${error}`) )
+}
+
+/**
+ * Configura a página corrente
+ *
+ * param 	button 		Elemento button do formulário.
+ */
+function setPaginatePage(button)
+{
+	let form 		= button.form
+	let currentPage = form.querySelector('[name="pagina"]').getAttribute('value')
+	let lastPage 	= parseInt( form.querySelector('[name="ultima"]').getAttribute('value') )
+
+	if ( button.name == 'pAjaxP') currentPage = 1
+	if ( button.name == 'pAjaxA') currentPage--
+	if ( button.name == 'pAjaxR') currentPage++
+	if ( button.name == 'pAjaxU') currentPage = lastPage
+
+	if ( currentPage > lastPage && lastPage>0 ) currentPage = lastPage
+	if ( currentPage < 1) currentPage = 1
+	form.querySelector('[name="pagina"]').setAttribute('value', currentPage)
+
+	getPaginate(form)
+}
+
+/**
+ * Retorna o valores do token, caso exista.
+ *
+ * param 	elemento 	elemento button (<<, <, >, >>)
+ */
+function getPaginateToken(form)
+{
+	// configurando o token caso exista
+	token = {}
+	if ( !!form.querySelector('[name="_Token[fields]"]') )
+	{
+		token['fields'] = form.querySelector('[name="_Token[fields]"]').getAttribute('value')
+	}
+	if ( !!form.querySelector('[name="_Token[unlocked]"]') )
+	{
+		token['unlocked'] = form.querySelector('[name="_Token[unlocked]"]').getAttribute('value')
+	}
+	if ( !!form.querySelector('[name="_Token[debug]"]') )
+	{
+		token['debug'] = form.querySelector('[name="_Token[debug]"]').getAttribute('value')
+	}
+
+	return token
 }
 
 /**
@@ -83,13 +101,13 @@ async function getPaginate(e)
  *
  * param 	e 	Elemento select
  */
-function setPaginateAction(e)
+function setPaginateAction(elemento)
 {
-	let opcao = e.selectedIndex
+	let opcao = elemento.selectedIndex
 	
 	if ( opcao > 0)
 	{
-		acao = e.value
+		acao = elemento.value
 		if ( acao.indexOf("(") > -1 )
 		{
 
@@ -106,12 +124,12 @@ function setPaginateAction(e)
  * param 	elemento 		Elemento button (<<, <, >, >>)
  * param 	res 			Resposta da pesquisas ajax.
  */
-function setPaginateTable(elemento, res)
+function setPaginateTable(form, res)
 {
 	let linkAcoes 	= '';
-	if ( typeof elemento.querySelector('[name="acoes"]') != 'undefined' )
+	if ( typeof form.querySelector('[name="acoes"]') != 'undefined' )
 	{
-		acoes 		= JSON.parse(elemento.querySelector('[name="acoes"]').getAttribute('value'))
+		acoes 		= JSON.parse(form.querySelector('[name="acoes"]').getAttribute('value'))
 		linkAcoes 	= "<select name='selectPaginateAjax' class='selectPaginateAjax' onclick=setPaginateAction(this)>"
 		linkAcoes	+= "<option>-- Açoes --</option>"
 		for ( acao in acoes )
@@ -121,11 +139,16 @@ function setPaginateTable(elemento, res)
 		linkAcoes  	+= "</select>"
 	}
 
+	let spanPagina 	= form.querySelector('[id="spanPagina"]')
+	let spanTotal 	= form.querySelector('[id="spanTotal"]')
+	let spanFaixa  	= form.querySelector('[id="spanFaixa"]')
+	let spanUltima  = form.querySelector('[id="spanUltima"]')
+
 	spanPagina.textContent 	= res.paginacao.pagina
 	spanTotal.textContent 	= res.paginacao.total.toLocaleString()
 	spanFaixa.textContent 	= res.paginacao.faixa
 	spanUltima.textContent 	= res.paginacao.ultima.toLocaleString()
-	elemento.querySelector('[name="ultima"]').setAttribute('value', res.paginacao.ultima)
+	form.querySelector('[name="ultima"]').setAttribute('value', res.paginacao.ultima)
 
 	let linesTbody 	= ""
 	let linesThead 	= ""
@@ -153,6 +176,6 @@ function setPaginateTable(elemento, res)
 
 	if ( linkAcoes.length ) { linesThead += "<th name='thAcoes' class='thPaginateAjaxAcoes'>Ações</th>" }
 
-	elemento.querySelector('[name="thead"]').innerHTML = "<tr>"+linesThead+"</tr>"
-	elemento.querySelector('[name="tbody"]').innerHTML = linesTbody
+	form.querySelector('[name="thead"]').innerHTML = "<tr>"+linesThead+"</tr>"
+	form.querySelector('[name="tbody"]').innerHTML = linesTbody
 }

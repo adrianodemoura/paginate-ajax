@@ -2,18 +2,12 @@
 
 <div>Form 1</div>
 
-<div>
-	<?= $this->element('PaginateAjax.table', ['acoes'=> @$acoes] ) ?>
-</div>
+<?= $this->element('PaginateAjax.table', ['acoes'=> @$acoes, 'pagina'=>@$pagina] ) ?>
 
 <div>
-	<div>
-		<?= $this->element('PaginateAjax.navigate') ?>
-	</div>
+	<?= $this->element('PaginateAjax.navigate') ?>
 
-	<div>
-		<?= $this->element('PaginateAjax.info') ?>
-	</div>
+	<?= $this->element('PaginateAjax.info') ?>
 </div>
 
 <?= $this->Form->end(); ?>
