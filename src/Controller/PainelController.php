@@ -33,7 +33,7 @@ class PainelController extends AppController
             'Visualizar'=> $this->request->here . '/visualizar/{id}',
         ];
 
-        $pagina = 11;
+        $pagina = 1;
 
         $this->set( compact('acoes', 'pagina') );
     }
