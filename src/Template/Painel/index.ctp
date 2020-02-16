@@ -1,12 +1,3 @@
-<?php
-	$acoes = 
-	[
-		'Excluir' 	=> $this->request->here . '/excluir/{id}',
-		'Visualizar'=> $this->request->here . '/visualizar/{id}',
-	];
-
-?>
-
 <?= $this->Form->create('Form1', ['url'=>['action'=>'lista']] ); ?>
 
 <div>Form 1</div>

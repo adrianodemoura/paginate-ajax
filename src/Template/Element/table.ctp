@@ -11,7 +11,7 @@
 	if ( !empty( @$acoes ) )
 	{
 		$this->Form->unlockField('acoes');
-		echo $this->Form->control('acoes', ['value'=> json_encode($acoes)] );
+		echo $this->Form->control('acoes', ['type'=>'text', 'value'=> json_encode($acoes)] );
 	}
 
 	echo '</div>';

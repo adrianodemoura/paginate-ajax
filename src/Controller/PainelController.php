@@ -27,6 +27,13 @@ class PainelController extends AppController
      */
     public function index()
     {
+        $acoes = 
+        [
+            'Excluir'   => $this->request->here . '/excluir/{id}',
+            'Visualizar'=> $this->request->here . '/visualizar/{id}',
+        ];
+
+        $this->set( compact('acoes') );
     }
 
     /**
