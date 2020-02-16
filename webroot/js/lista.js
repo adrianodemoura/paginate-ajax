@@ -15,16 +15,20 @@ window.onload = function()
 	}
 }
 
-function redirecionar(e)
+function setPaginateAction(e)
 {
-	let acao = e.value
-
-	if ( acao.indexOf("(") > -1 )
+	let opcao = e.selectedIndex
+	
+	if ( opcao > 0)
 	{
+		acao = e.value
+		if ( acao.indexOf("(") > -1 )
+		{
 
-	} else
-	{
-		document.location.href = acao
+		} else if ( acao.length > 0)
+		{
+			document.location.href = acao
+		}
 	}
 }
 
@@ -40,7 +44,7 @@ async function getPaginate(e)
 	if ( typeof elemento.querySelector('[name="acoes"]') != 'undefined' )
 	{
 		acoes 		= JSON.parse(elemento.querySelector('[name="acoes"]').getAttribute('value'))
-		linkAcoes 	= "<select name='selectPaginateAjax' class='selectPaginateAjax' onclick=redirecionar(this)>"
+		linkAcoes 	= "<select name='selectPaginateAjax' class='selectPaginateAjax' onclick=setPaginateAction(this)>"
 		linkAcoes	+= "<option>-- Açoes --</option>"
 		for ( acao in acoes )
 		{
