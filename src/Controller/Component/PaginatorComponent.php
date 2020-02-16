@@ -42,7 +42,7 @@ class PaginatorComponent extends Component
      * Método de inicilização do componente.
      * 
      * @param   array   $config     Configurações do componente.
-     * @return  \Cake\Http\Response|null
+     * @return  \Cake\Http\Response|Null
      */
     public function initialize( array $config=[] )
     {
@@ -68,11 +68,14 @@ class PaginatorComponent extends Component
      * @param 	Array 	$data 	Dados da lista.
      * Os dados podem ser:
      * 
-     * - model: Nome da table
+     * @param   Array   $parametros     Parâmetros da pesquisa:
+     * - pagina: pagina da pesquisa
+     * - tabela: Nome da tabela
      * - campos: Campos da lista
      * - limite: Limite da lista, não pode ultrapassar o valor do atributo limit.
      * - group: Campos para group by
      * 
+     * @return  \Cake\Http\Response|Null
      */
     public function paginate()
     {
@@ -142,7 +145,6 @@ class PaginatorComponent extends Component
             return ['status'=>false, 'mensagem'=> __('Erro ao tentar recuperar a lista !') ];
         }
     }
-
 
     /**
      * Retorna o nome da Tabela a ser pesquisada.

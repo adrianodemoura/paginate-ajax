@@ -49,11 +49,19 @@ async function getPaginate(e)
 		linkAcoes  	+= "</select>"
 	}
 
-	let tokenFields	= elemento.querySelector('[name="_Token[fields]"]').getAttribute('value')
-	let tokenUnlock	= elemento.querySelector('[name="_Token[unlocked]"]').getAttribute('value')
-	let tokenDebug  = elemento.querySelector('[name="_Token[debug]"]').getAttribute('value')
-
-	let token = {'fields': tokenFields, 'unlocked': tokenUnlock, 'debug': tokenDebug }
+	let token = {}
+	if ( !!elemento.querySelector('[name="_Token[fields]"]') )
+	{
+		token['fields'] = elemento.querySelector('[name="_Token[fields]"]').getAttribute('value')
+	}
+	if ( !!elemento.querySelector('[name="_Token[unlocked]"]') )
+	{
+		token['unlocked'] = elemento.querySelector('[name="_Token[unlocked]"]').getAttribute('value')
+	}
+	if ( !!elemento.querySelector('[name="_Token[debug]"]') )
+	{
+		token['debug'] = elemento.querySelector('[name="_Token[debug]"]').getAttribute('value')
+	}
 
 	switch (e.name)
 	{

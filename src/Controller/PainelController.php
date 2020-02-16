@@ -1,13 +1,11 @@
 <?php
-namespace PaginateAjax\Controller;
-
-use PaginateAjax\Controller\AppController;
-
 /**
  * Painel Controller
- *
- *
- * @method \PaginateAjax\Model\Entity\Painel[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ */
+namespace PaginateAjax\Controller;
+use PaginateAjax\Controller\AppController;
+/**
+ * Mantém o cadastro para testes do componente PaginateAjax.
  */
 class PainelController extends AppController
 {
@@ -25,13 +23,10 @@ class PainelController extends AppController
     /**
      * Index method
      *
-     * @return \Cake\Http\Response|null
+     * @return \Cake\Http\Response|Null
      */
     public function index()
     {
-        $optionsMunicipios = [1=>'pagina 1', 2=>'pagina 2'];
-
-        $this->set( compact('optionsMunicipios') );
     }
 
     /**
