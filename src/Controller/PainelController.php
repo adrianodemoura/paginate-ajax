@@ -18,6 +18,7 @@ class PainelController extends AppController
     {
         parent::initialize();
         $this->loadComponent('PaginateAjax.Paginator');
+        $this->loadComponent('Cookie');
     }
 
     /**
@@ -33,7 +34,9 @@ class PainelController extends AppController
             'Visualizar'=> $this->request->here . '/visualizar/{id}',
         ];
 
-        $pagina = 1;
+        $pagina = $this->Cookie->check( $this->name.'.ultimaPagina' )
+            ? $this->Cookie->read( $this->name.'.ultimaPagina' )
+            : 1;
 
         $this->set( compact('acoes', 'pagina') );
     }
@@ -83,6 +86,10 @@ class PainelController extends AppController
         //$this->Paginator->setParams('campos', ['Municipios.id', 'Municipios.nome', 'Municipios.uf', 'Municipios.codi_estd', 'Municipios.desc_estd'] );
         //$this->Paginate->setParametro('tipo', 'list');
         //$this->Paginate->setParametro('pagina', 20);
+
+        $pagina = strlen( @$this->request->getQuery( 'pagina' ) ) ? $this->request->getQuery( 'pagina' ) : 1;
+        $pagina = strlen( @$this->request->getData( 'pagina' ) )  ? $this->request->getData( 'pagina' )  : $pagina;
+        $this->Cookie->write( $this->name.'.ultimaPagina', $pagina );
 
         $this->Paginator->paginate();
     }
