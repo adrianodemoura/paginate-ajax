@@ -102,9 +102,10 @@ class PaginatorComponent extends Component
         } else
         {
             $retorno = $this->getLista();
-            if ( $retorno['paginacao']['pagina'] > $retorno['paginacao']['ultima'] )
+            if ( @$retorno['paginacao']['pagina'] > @$retorno['paginacao']['ultima'] )
             {
-                $this->parametros['pagina']--;
+                $this->parametros['pagina'] = (int) ($this->parametros['pagina'] - 1);
+                $this->Controller->request->data['pagina'] = $this->parametros['pagina'];
                 $retorno = $this->getLista();
             }
         }
@@ -130,8 +131,8 @@ class PaginatorComponent extends Component
         $this->parametros['tipo']   = 'all';
         $this->parametros['limite'] = 10;
 
-        $arrParamsObrigatorios      = ['pagina'=>'page', 'limite'=>'limit', 'tipo'=>'type'];
-        foreach( $arrParamsObrigatorios as $_tag => $_tag2 )
+        $arrParamsObrigatorios = ['pagina', 'limite', 'tipo'];
+        foreach( $arrParamsObrigatorios as $_l => $_tag )
         {
             $this->parametros[ $_tag ] = strlen( @$Request->getQuery( $_tag ) ) ? $Request->getQuery( $_tag ) : $this->parametros[ $_tag ];
             $this->parametros[ $_tag ] = strlen( @$Request->getData( $_tag ) )  ? $Request->getData( $_tag )  : $this->parametros[ $_tag ];
