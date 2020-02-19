@@ -1,4 +1,12 @@
-<?= $this->Form->create('Form1', ['url'=>['action'=>'lista']] ); ?>
+<?php
+	$acoes = 
+	[
+		'Excluir'   => $raiz . '/excluir/{id}',
+		'Visualizar'=> $raiz . '/visualizar/{id}',
+	];
+
+	echo $this->Form->create('Form1', ['url'=>['action'=>'get_paginate_ajax']] ); 
+?>
 
 <div>Form 1</div>
 

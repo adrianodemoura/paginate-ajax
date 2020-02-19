@@ -18,7 +18,6 @@ class PainelController extends AppController
     {
         parent::initialize();
         $this->loadComponent('PaginateAjax.Paginator');
-        $this->loadComponent('Cookie');
     }
 
     /**
@@ -28,17 +27,7 @@ class PainelController extends AppController
      */
     public function index()
     {
-        $acoes = 
-        [
-            'Excluir'   => $this->request->here . '/excluir/{id}',
-            'Visualizar'=> $this->request->here . '/visualizar/{id}',
-        ];
-
-        $pagina = $this->Cookie->check( $this->name.'.ultimaPagina' )
-            ? $this->Cookie->read( $this->name.'.ultimaPagina' )
-            : 1;
-
-        $this->set( compact('acoes', 'pagina') );
+        //
     }
 
     /**
@@ -72,7 +61,7 @@ class PainelController extends AppController
             $this->Flash->error( __("Registro $idMunicipio, excluído com sucesso") );
         }
 
-        return $this->redirect(['action'=>'index']);
+        return $this->redirect( ['action'=>'index']) ;
     }
 
     /**
@@ -80,17 +69,9 @@ class PainelController extends AppController
      *
      * @var     
      */
-    public function lista()
+    public function getPaginateAjax()
     {
         $this->Paginator->setParams('tabela', 'Municipios');
-        //$this->Paginator->setParams('campos', ['Municipios.id', 'Municipios.nome', 'Municipios.uf', 'Municipios.codi_estd', 'Municipios.desc_estd'] );
-        //$this->Paginate->setParametro('tipo', 'list');
-        //$this->Paginate->setParametro('pagina', 20);
-
-        $pagina = strlen( @$this->request->getQuery( 'pagina' ) ) ? $this->request->getQuery( 'pagina' ) : 1;
-        $pagina = strlen( @$this->request->getData( 'pagina' ) )  ? $this->request->getData( 'pagina' )  : $pagina;
-        $this->Cookie->write( $this->name.'.ultimaPagina', $pagina );
-
         $this->Paginator->paginate();
     }
 

@@ -31,6 +31,13 @@ class PaginatorComponent extends Component
      */
    	private $limit 				= 10000;
 
+    /**
+     * Chave do controller corrente.
+     * 
+     * @var     String
+     */
+    private $chave              = '';
+
    	/**
    	 * Parâmetros da lista
    	 *
@@ -46,8 +53,16 @@ class PaginatorComponent extends Component
      */
     public function initialize( array $config=[] )
     {
-    	$this->Controller  = $this->_registry->getController();
-    	$this->limit       = isset( $config['limit'] ) ? $config['limit'] : 10000;
+    	$this->Controller   = $this->_registry->getController();
+        $this->limit        = isset( $config['limit'] ) ? $config['limit'] : 10000;
+        $this->chave        = $this->request->plugin.$this->Controller->name;
+        $Sessao             = $this->Controller->request->getSession();
+
+        $raiz               = str_replace( '/'.$this->Controller->request->getParam('action'), '', $this->Controller->request->base.'/'.$this->Controller->request->url );
+        $pagina             = $Sessao->read($this->chave.'.pagina') ? $Sessao->read($this->chave.'.pagina') : 1;
+
+        $this->parametros['pagina'] = $pagina;
+        $this->Controller->set( compact('raiz', 'pagina') );
     }
 
     /**
@@ -87,6 +102,11 @@ class PaginatorComponent extends Component
         } else
         {
             $retorno = $this->getLista();
+            if ( $retorno['paginacao']['pagina'] > $retorno['paginacao']['ultima'] )
+            {
+                $this->parametros['pagina']--;
+                $retorno = $this->getLista();
+            }
         }
 
 		$this->Controller->autoRender = false; 
@@ -101,13 +121,13 @@ class PaginatorComponent extends Component
      *
      * @return  Array   $retorno    Retorno da lista, com status, paginação e lista.
      */
-    private function getlista()
+    private function getLista()
     {
-        $Request  = $this->Controller->request;
-        $tabela   = $this->getTabela();
+        $Request    = $this->Controller->request;
+        $Sessao     = $Request->getSession();
+        $tabela     = $this->getTabela();
 
         $this->parametros['tipo']   = 'all';
-        $this->parametros['pagina'] = 1;
         $this->parametros['limite'] = 10;
 
         $arrParamsObrigatorios      = ['pagina'=>'page', 'limite'=>'limit', 'tipo'=>'type'];
@@ -118,24 +138,31 @@ class PaginatorComponent extends Component
         }
         if ( $this->parametros['limite'] > $this->limit) { $this->parametros['limite'] = $this->limit; }
 
+        $Sessao->write( $this->chave.'.pagina', $this->parametros['pagina'] );
+
         $this->Controller->loadModel( $tabela );
 
         try
         {
             $lista  = $this->Controller->$tabela->find( $this->parametros['tipo'] )
-            ->select( $this->getCampos() )
-            ->where( $this->getFiltros() )
-            ->group( $this->getGrupos() )
-            ->order( $this->getOrdem() )
-            ->limit( $this->parametros['limite'] )
-            ->offset( (($this->parametros['pagina']-1) * $this->parametros['limite']) )
-            ->toArray();
+                ->select( $this->getCampos() )
+                ->where( $this->getFiltros() )
+                ->group( $this->getGrupos() )
+                ->order( $this->getOrdem() )
+                ->limit( $this->parametros['limite'] )
+                ->offset( (($this->parametros['pagina']-1) * $this->parametros['limite']) )
+                ->toArray();
+            $totLista = count($lista);
 
             $paginacao              = ['pagina'=>0, 'ultima'=>0, 'faixa'=>0, 'total'=>0];
             $paginacao['pagina']    = $this->parametros['pagina'];
             $paginacao['faixa']     = $this->parametros['limite'];
             $paginacao['total']     = $this->Controller->$tabela->find()->where( $this->getFiltros() )->count('*');
-            $paginacao['ultima']    = round( $paginacao['total'] /  $paginacao['faixa'] );
+            $paginacao['ultima']    = ceil( $paginacao['total'] /  $paginacao['faixa'] );
+            if ( $totLista < $paginacao['faixa'] )
+            {
+                $paginacao['faixa'] = $totLista;
+            }
 
             return ['status'=>true, 'paginacao'=>$paginacao, 'lista'=> $lista];
         } catch (Exception $e)

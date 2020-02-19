@@ -113,6 +113,7 @@ function setPaginateAction(elemento)
 
 		} else if ( acao.length > 0)
 		{
+			console.log( acao )
 			document.location.href = acao
 		}
 	}
@@ -148,6 +149,7 @@ function setPaginateTable(form, res)
 	spanTotal.textContent 	= res.paginacao.total.toLocaleString()
 	spanFaixa.textContent 	= res.paginacao.faixa
 	spanUltima.textContent 	= res.paginacao.ultima.toLocaleString()
+	form.querySelector('[name="pagina"]').setAttribute('value', res.paginacao.pagina)
 	form.querySelector('[name="ultima"]').setAttribute('value', res.paginacao.ultima)
 
 	let linesTbody 	= ""
